@@ -1,0 +1,15 @@
+[
+  {
+    "table": "prestamos",
+    "id": 1782167105951,
+    "nombre": "Zury",
+    "libro": {
+      "table": "libros",
+      "id": 1782167078180,
+      "titulo": "azul",
+      "autor": "Ruben Dario",
+      "cantidad": "1"
+    },
+    "fecha": "22/6/2026"
+  }
+]
