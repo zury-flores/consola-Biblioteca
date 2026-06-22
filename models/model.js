@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import path from "path";
 
 export default class Model {
   table = "models";
@@ -7,14 +8,29 @@ export default class Model {
     return this.table;
   }
 
-  async save(payload) {
-    let datos = await this.load();
+  getPath() {
+    return `db/${this.getTable()}.json`;
+  }
 
+  async ensureFile() {
+    try {
+      await fs.mkdir("db", { recursive: true });
+
+      await fs.access(this.getPath());
+    } catch {
+      await fs.writeFile(this.getPath(), "[]");
+    }
+  }
+
+  async save(payload) {
+    await this.ensureFile(); // 👈 clave
+
+    let datos = await this.load();
     datos.push(payload);
 
     await fs.writeFile(
-      `db/${this.getTable()}.json`,
-      JSON.stringify(datos, null, 2),
+      this.getPath(),
+      JSON.stringify(datos, null, 2)
     );
 
     return payload;
@@ -22,11 +38,7 @@ export default class Model {
 
   async load() {
     try {
-      const data = await fs.readFile(
-        `db/${this.getTable()}.json`,
-        "utf-8",
-      );
-
+      const data = await fs.readFile(this.getPath(), "utf-8");
       return JSON.parse(data);
     } catch {
       return [];
